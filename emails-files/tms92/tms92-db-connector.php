@@ -15,7 +15,7 @@ $success="success.php";
 // Database credentials
 $servername = "tms.palmflights.co.uk";
 $username = "tms_pf_leads_user";
-$password = "MLsw$8WIt*o2";
+$password = "Nx/y]Ya[HkQ;Xe*C=g8786";
 $dbname = "tms_pf_db";
 
 
