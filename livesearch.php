@@ -6,7 +6,7 @@
 
         $('.live-search').typeahead({
             source: <?php
-                    $con = new mysqli("fms.candfsystems.com", "fms_web_cfdev", "Br2*a7b+!roVAR", "fms_db");
+                    $con = new mysqli("localhost", "fms_web", "r1@ie*.hre32", "fms_db");
 
                     $result = $con->query("SELECT DISTINCT place_string FROM places");
                     while ($row = $result->fetch_object()) {
@@ -20,4 +20,3 @@
         });
     });
 </script>
-
