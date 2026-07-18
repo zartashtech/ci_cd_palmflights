@@ -1,0 +1,2 @@
+ <h4>About Harare</h4>
+                        Visit the historic Mashonaland and the capital of Zimbabwe. Find cheapest&nbsp;air&nbsp;flights to Harare&nbsp;from £558. Hurry up, before tickets are booked!

@@ -1,0 +1,2 @@
+ <h4>About Muscat</h4>
+                        Want to experience a picture perfect city with the blue sky, crystal clear water and mountains around? Visit Muscat with cheapest&nbsp;air&nbsp;flights to Muscat&nbsp;from £543.

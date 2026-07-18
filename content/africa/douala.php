@@ -1,0 +1,2 @@
+ <h4>About Douala</h4>
+                        <p class="description">Whether you love nature, want to have a look of cultural heritage or want to indulge shopping, you can board cheap flights to Douala and explore the city in your way. The scenic beauty of the city will lift your soul and make you feel relaxed.</p>

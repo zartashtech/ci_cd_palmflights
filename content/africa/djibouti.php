@@ -1,0 +1,2 @@
+  <h4>About Djibouti</h4>
+                        <p class="description"> There are many interesting places to see while you are in Djibouti. The places which are worth visiting are Afar Triangle, Central Market and Lake Assal..</p>

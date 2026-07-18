@@ -1,0 +1,2 @@
+ <h4>About Lagos</h4>
+                        Enjoy your trip at the perfect concoction of nature and concrete at the heart of Lagos. Book your cheapest&nbsp;air&nbsp;flights to Lagos&nbsp;from £339, now!

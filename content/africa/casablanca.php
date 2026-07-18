@@ -1,0 +1,2 @@
+  <h4>About Casablanca</h4>
+                        <p class="description"> This is the place where you can see the King Hassan II Mosque, Old Medina and the Corniche. Book the cheap flights to Casablanca and visit these interesting spots on your vacation.</p>

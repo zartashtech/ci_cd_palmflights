@@ -1,0 +1,2 @@
+ <h4>About Banjul</h4>
+                        If economic and cultural activity is sought after in one single destination, then Banjul is the place for you. Book your cheapest&nbsp;air&nbsp;flights to Banjul&nbsp;from £580.

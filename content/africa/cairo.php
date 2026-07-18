@@ -1,0 +1,2 @@
+ <h4>About Cairo</h4>
+                        <p class="description"> The best time to visit Cairo is during Egyptian winter that is from November to March when you can book cheap flights to Cairo easily. </p>

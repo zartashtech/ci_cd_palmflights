@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+        <script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
+        <!-- <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+        <script src="./assets/js/bootstrap.min.js"></script>
+        <script src="./assets/js/jquery.mockjax.js"></script>
+        <script src="../src/bootstrap-typeahead.js"></script>
+    </head>
+    <body class="container">
+        
+        
+        <div class="row">
+            <!-- Nav tabs -->
+            
+            <!-- Tab panes -->
+            <div class="tab-content">
+                
+                
+
+                <div id="tab-demo7">
+                    <h3>Demo #7</h3>
+                    <div class="well col-md-5">
+                        <input id="demo7" type="text" class="col-md-12 form-control" placeholder="Search cities..." autocomplete="off" />
+                    </div>
+                    
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            $(function() {
+                function displayResult(item) {
+                    $('.alert').show().html('You selected <strong>' + item.value + '</strong>: <strong>' + item.text + '</strong>');
+                }
+
+                
+				$('#demo7').typeahead({
+                    source: [
+                        'Toronto',
+						'Toronto1',
+						'Toronto2',
+						'Toronto3',
+						'Toronto4',
+						'Toronto5',
+						'Toronto6',
+						'Toronto7',
+						'Toronto8',
+						'Toronto9',
+						'Toronto10',
+                        'Montreal',
+                        'New York',
+                        'Buffalo',
+                        'Boston',
+                        'Columbus',
+                        'Dallas',
+                        'Vancouver',
+                        'Seattle',
+                        'Los Angeles'],
+					scrollBar:true,
+                    onSelect: displayResult
+                });
+            });
+        </script>
+    </body>
+</html>

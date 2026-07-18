@@ -1,0 +1,1 @@
+<?php include 'emails-files/vr2-forms/form-booking-via-search.php'; ?>

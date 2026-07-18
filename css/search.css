@@ -1,0 +1,22 @@
+<style>
+      @media (max-width: 767px) {
+        .hidden-mobile {
+          min-height: 2px !important;
+        }
+      }
+      
+      
+       @media (max-width: 767px) {
+        .img-mob {
+          width: 12vw !important;
+        }
+      }
+      
+      @media (max-width: 767px) {
+        .price-mob {
+          margin-bottom: 1px; !important;
+        }
+      }
+      
+      
+    </style>
