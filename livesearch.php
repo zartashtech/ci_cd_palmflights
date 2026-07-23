@@ -6,7 +6,8 @@
 
         $('.live-search').typeahead({
             source: <?php
-                    $con = new mysqli("localhost", "fms_web", "r1@ie*.hre32", "fms_db");
+                    require_once __DIR__ . '/global.php';
+                    $con = new mysqli($server, $user, $pass, $db);
 
                     $result = $con->query("SELECT DISTINCT place_string FROM places");
                     while ($row = $result->fetch_object()) {
