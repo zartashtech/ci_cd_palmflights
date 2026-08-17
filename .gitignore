@@ -1,2 +1,4 @@
 # Local DB configuration — do not commit credentials
 global.php
+/connection-db.php
+/global.php
