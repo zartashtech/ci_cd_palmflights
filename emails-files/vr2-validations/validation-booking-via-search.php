@@ -1,88 +1,45 @@
 <?php
+require_once __DIR__ . '/security-helper.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    function test_input($dataValidate)
-{
-    $dataValidate = trim($dataValidate);
-    $dataValidate = stripslashes($dataValidate);
-    $dataValidate = htmlspecialchars($dataValidate);
-    $dataValidate = strip_tags($dataValidate);
-    return $dataValidate;
+    // Anti-bot checks
+    if (pf_is_bot_honeypot() || pf_is_bot_timing()) {
+        exit('Request processed.');
+    }
+
+    $p_name           = pf_clean_input($_POST['firstname'] ?? '');
+    $email            = pf_clean_input($_POST['email'] ?? '');
+    $phone            = pf_clean_input($_POST['phoneNumber'] ?? '');
+    $flight_type      = pf_clean_input($_GET['trip_type'] ?? 'Two Way');
+    $departure        = pf_clean_input($_GET['origin'] ?? '');
+    $arrival          = pf_clean_input($_GET['destination'] ?? '');
+    $departure_date   = pf_clean_input($_GET['departing_date'] ?? '');
+    $arrival_date     = pf_clean_input($_GET['leaving_date'] ?? '');
+    $number_of_adult  = pf_clean_input($_GET['adults'] ?? '1');
+    $number_of_child  = pf_clean_input($_GET['child'] ?? '0');
+    $number_of_infant = pf_clean_input($_GET['infants'] ?? '0');
+    $prefered_airline = pf_clean_input($_GET['airline_name'] ?? 'Any');
+    $travel_class     = pf_clean_input($_GET['class_name'] ?? 'Economy');
+    $source_id        = 2;
+    $siteurl          = "Inquiry via Search Mechanism";
+    $custom_data_3    = pf_clean_input($_GET['totalFare'] ?? '');
+    $form_name        = pf_clean_input($_POST['form_name'] ?? 'book-via-search');
+
+    // Strict validation
+    $nameError = pf_validate_name($p_name);
+    $emailError = pf_validate_email($email);
+    $phoneError = pf_validate_phone($phone);
+    $originError = empty($departure) ? 'Please enter departure.' : null;
+    $destinationError = empty($arrival) ? 'Please enter destination.' : null;
+
+    if (empty($nameError) && empty($emailError) && empty($phoneError) && empty($originError) && empty($destinationError)) {
+        include '../tms92/tms92-db-connector.php';
+        exit();
+    } else {
+        $firstErr = $nameError ?? $emailError ?? $phoneError ?? $originError ?? $destinationError ?? 'Please verify your information.';
+        echo "<script>alert(" . json_encode($firstErr) . "); window.history.back();</script>";
+        exit();
+    }
 }
-
-
-$p_name =test_input($_POST['firstname']);
-$email =test_input($_POST['email']);
-$phone =test_input($_POST['phoneNumber']);
-$flight_type =test_input($_GET['trip_type']);
-$departure =test_input($_GET['origin']);
-$arrival =test_input($_GET['destination']);
-$departure_date =test_input($_GET['departing_date']);
-$arrival_date =test_input($_GET['leaving_date']);
-$number_of_adult =test_input($_GET['adults']);
-$number_of_child =test_input($_GET['child']);
-$number_of_infant =test_input($_GET['infants']);
-$prefered_airline=test_input($_GET['airline_name']);
-$travel_class=test_input($_GET['class_name']);
-$source_id =2;
-$siteurl ="Inquiry via Search Mechanism";
-$custom_data_3=test_input($_GET['totalFare']);
-
-$form_name=test_input($_POST['form_name']);
-
-
-
-
-	// primary validate function
-	function validate($str) {
-		return trim(htmlspecialchars($str));
-	}
-
-	if (empty($p_name)) {
-		$nameError = 'Name should be filled';
-	}
-
-	if (empty($email)) {
-		$emailError = 'Please enter your email';
-	} else {
-		$email = validate($_POST['email']);
-		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			$emailError = 'Invalid Email';
-		}
-	}
-        if (empty($phone)) {
-		$phoneError = 'Please enter your phonenumber';
-	} 	
-
-	    if (empty($departure)) {
-		$originError = 'Please enter your origin';
-	} 
-	
-	if (empty($arrival)) {
-		$destinationError = 'Please enter your destination';
-	} 
-	if (empty($departure_date)) {
-		$departuredateError = 'Please provide departure date';
-	} 
-	    if (empty($arrival_date)) {
-		$leavingDateError = 'Please enter your return';
-	} 
-	
-
-	if (empty($nameError) ) {
-		// great form filling
-		
-   include '../tms92/tms92-db-connector.php' ;
-   //include '../vr2-mailer/mailer-booking-via-search.php' ;
-   
-		
-		exit(); // terminates the script
-	}
-	else{
-	    
-	   echo "Someting Went wrong";
-	}
-
-}
-
 ?>

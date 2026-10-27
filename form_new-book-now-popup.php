@@ -158,6 +158,11 @@ include('ip_browser.php');
                     ?>
 
                     <input name="query_form" type="hidden" class="form-control myht" value="Book Now Popup" />
+                    <input type="hidden" name="pf_ts" value="<?php echo time(); ?>">
+                    <div style="display:none !important; visibility:hidden !important; position:absolute !important; left:-9999px !important;">
+                        <label for="form_website_hp">Leave empty</label>
+                        <input type="text" name="form_website_hp" id="form_website_hp" tabindex="-1" autocomplete="off" value="" />
+                    </div>
                     <div class="n-form">
                         <div class="main-glyph">
                             <input class="form-control LoNotSensitive" type="text" placeholder="Name" name="name" minlength="3" maxlength="30" required />

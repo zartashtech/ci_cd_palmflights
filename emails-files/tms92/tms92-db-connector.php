@@ -1,12 +1,17 @@
 <?php
 
+if (!defined('PF_FORM_SECURE') && (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__) || basename($_SERVER['PHP_SELF'] ?? '') === basename(__FILE__))) {
+    http_response_code(403);
+    exit('Access Denied');
+}
+
 $baseUrl="www.palmflights.co.uk";
 $web_reletive_dir="/";
 
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Hide errors from visitors to protect system internals
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(0);
 
 // Only Change These values for every website
 $company = "2";
@@ -24,7 +29,8 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 
 // Check connection
 if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+    error_log("Database connection failed: " . mysqli_connect_error());
+    exit("Service temporarily unavailable. Please try again later.");
 }
 
 // Static Values for All Websites
@@ -36,24 +42,29 @@ $status = 1;
 $comment = "NULL";
 
 // Variables from form (safe fallback)
-$p_name          = $p_name          ?? "NULL";
-$phone           = $phone           ?? "NULL";
-$email           = $email           ?? "NULL";
-$departure       = $departure       ?? "NULL";
-$arrival         = $arrival         ?? "NULL";
-$departure_date  = $departure_date  ?? "NULL";
-$arrival_date    = $arrival_date    ?? "NULL";
-$number_of_adult = $number_of_adult ?? "NULL";
-$number_of_child = $number_of_child ?? "NULL";
-$number_of_infant= $number_of_infant?? "NULL";
-$flight_type     = $flight_type     ?? "NULL";
-$extra_details   = $extra_details   ?? "NULL";
-$prefered_airline= $prefered_airline?? "Any";
-$travel_class    = $travel_class    ?? "NULL";
-$siteurl         = $siteurl         ?? "NULL";
-$source_id       = $source_id       ?? "NULL";
-$custom_data_2   = $custom_data_2   ?? "NULL";
-$custom_data_3   = $custom_data_3   ?? "NULL";
+$p_name          = !empty($p_name) ? $p_name : "NULL";
+$phone           = !empty($phone) ? $phone : "NULL";
+$email           = !empty($email) ? $email : "NULL";
+$departure       = !empty($departure) ? $departure : "NULL";
+$arrival         = !empty($arrival) ? $arrival : "NULL";
+$departure_date  = !empty($departure_date) ? $departure_date : "NULL";
+$arrival_date    = !empty($arrival_date) ? $arrival_date : "NULL";
+$number_of_adult = !empty($number_of_adult) ? $number_of_adult : "NULL";
+$number_of_child = !empty($number_of_child) ? $number_of_child : "NULL";
+$number_of_infant= !empty($number_of_infant) ? $number_of_infant : "NULL";
+$flight_type     = !empty($flight_type) ? $flight_type : "NULL";
+$extra_details   = !empty($extra_details) ? $extra_details : "NULL";
+$prefered_airline= !empty($prefered_airline) ? $prefered_airline : "Any";
+$travel_class    = !empty($travel_class) ? $travel_class : "NULL";
+$siteurl         = !empty($siteurl) ? $siteurl : "NULL";
+$source_id       = !empty($source_id) ? $source_id : "NULL";
+$custom_data_2   = !empty($custom_data_2) ? $custom_data_2 : "NULL";
+$custom_data_3   = !empty($custom_data_3) ? $custom_data_3 : "NULL";
+
+// Safety check: Do not insert completely empty or blank leads
+if (($phone === "NULL" || empty($phone)) && ($email === "NULL" || empty($email))) {
+    exit("Invalid lead data.");
+}
 
 // form_name comes from validation.php, fallback to NULL if missing
 $form_name = isset($form_name) ? $form_name : "NULL";
@@ -82,27 +93,22 @@ $stmt->bind_param(
 if ($stmt->execute()) {
     // Check if the inquiry is "Inquiry For Email & Contact No Only"
     if ($siteurl !== "Inquiry For Email & Contact No Only") {
-        // For normal submissions, perform the redirect
         // ✅ WhatsApp send hook (plug & play)
-    echo 'hello';
+        include __DIR__ . "/../../wa/wa_entry_point.php";
 
-    // ✅ WhatsApp send hook (plug & play)
-    include __DIR__ . "/../../wa/wa_entry_point.php";
+        // 🔹 Production → redirect to thank-you page
+        $fname    = ($p_name !== "NULL") ? $p_name : "";
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
 
-    // 🔹 Production → redirect to thank-you page
-    $fname    = $p_name;
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
-
-    $url = $protocol . "://" . $baseUrl . $web_reletive_dir . $success . "?lastname=" . urlencode($fname);
-    header("Location: $url");
-    exit;
+        $url = $protocol . "://" . $baseUrl . $web_reletive_dir . $success . "?lastname=" . urlencode($fname);
+        header("Location: $url");
+        exit;
     } else {
-        // echo "Inquiry For Email & Contact No Only";
-       
+        // Inquiry For Email & Contact No Only
     }
 } else {
-    echo "Error: " . $stmt->error;
-
+    error_log("TMS Lead insert error: " . $stmt->error);
+    exit("We could not process your inquiry at this moment. Please call us directly.");
 }
 
 // Close connection

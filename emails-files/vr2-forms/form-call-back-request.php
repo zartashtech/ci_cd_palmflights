@@ -6,7 +6,12 @@ src="https://code.jquery.com/jquery-3.4.1.min.js"
 
 <form class="form-horizontal" id="form2" role="form" method="POST" 
 action="<?php echo strip_tags(htmlspecialchars('emails-files/vr3-recaptcha/captcha-call-back-request.php')); ?>">
-<input type="hidden" name="form_name" value="cb-request">                               
+<input type="hidden" name="form_name" value="cb-request">
+<input type="hidden" name="pf_ts" value="<?php echo time(); ?>">
+<div style="display:none !important; visibility:hidden !important; position:absolute !important; left:-9999px !important;">
+    <label for="form_website_hp">Leave empty</label>
+    <input type="text" name="form_website_hp" id="form_website_hp" tabindex="-1" autocomplete="off" value="" />
+</div>
 <div class="form-group">
 <input name="query_form" type="hidden" class="form-control myht" value="Request Call Back" />
 

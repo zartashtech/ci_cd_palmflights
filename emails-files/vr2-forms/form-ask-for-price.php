@@ -5,7 +5,12 @@ src="https://code.jquery.com/jquery-3.4.1.min.js"
 <script src="https://www.google.com/recaptcha/api.js?render=6Le70_0lAAAAAEEnPWZ5M5HQ5L7tjetfP49Y2DbW"></script>
 <form  id="newsletterForm" class="form-horizontal" role="form" method="post" 
 action="emails-files/vr3-recaptcha/captcha-ask-for-price.php">
-<input type="hidden" name="form_name" value="ask-for-price"> 
+<input type="hidden" name="form_name" value="ask-for-price">
+<input type="hidden" name="pf_ts" value="<?php echo time(); ?>">
+<div style="display:none !important; visibility:hidden !important; position:absolute !important; left:-9999px !important;">
+    <label for="form_website_hp">Leave empty</label>
+    <input type="text" name="form_website_hp" id="form_website_hp" tabindex="-1" autocomplete="off" value="" />
+</div> 
                                 <div class="form-group">
 
                                     <input name="query_date" type="hidden" value='<?php echo strip_tags(htmlspecialchars(date("Y-m-d h:i:sa"))); ?>' />

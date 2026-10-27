@@ -1,62 +1,34 @@
 <?php
+require_once __DIR__ . '/security-helper.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    function test_input($dataValidate)
-{
-    $dataValidate = trim($dataValidate);
-    $dataValidate = stripslashes($dataValidate);
-    $dataValidate = htmlspecialchars($dataValidate);
-    $dataValidate = strip_tags($dataValidate);
-    return $dataValidate;
+    // Anti-bot checks
+    if (pf_is_bot_honeypot() || pf_is_bot_timing()) {
+        exit('Request processed.');
+    }
+
+    $p_name        = pf_clean_input($_POST['name'] ?? '');
+    $email         = pf_clean_input($_POST['mail'] ?? '');
+    $phone         = pf_clean_input($_POST['cell'] ?? '');
+    $extra_details = pf_clean_input($_POST['msg'] ?? '');
+    $source_id     = 2;
+    $siteurl       = "Inquiry Via Contact Us";
+    $form_name     = pf_clean_input($_POST['form_name'] ?? 'contact-us');
+
+    // Strict validation
+    $nameError = pf_validate_name($p_name);
+    $emailError = pf_validate_email($email);
+    $phoneError = pf_validate_phone($phone);
+    $messageError = empty($extra_details) ? 'Please enter your message.' : null;
+
+    if (empty($nameError) && empty($emailError) && empty($phoneError) && empty($messageError)) {
+        include '../tms92/tms92-db-connector.php';
+        exit();
+    } else {
+        $firstErr = $nameError ?? $emailError ?? $phoneError ?? $messageError ?? 'Please verify your information.';
+        echo "<script>alert(" . json_encode($firstErr) . "); window.history.back();</script>";
+        exit();
+    }
 }
-
-$p_name =test_input($_POST['name']);
-$email =test_input($_POST['mail']);
-$phone =test_input($_POST['cell']);
-$extra_details=test_input($_POST['msg']);
-$source_id =2;
-$siteurl ="Inquiry Via Contact Us";
-
-$form_name=test_input($_POST['form_name']);
-
-
-	// primary validate function
-	function validate($str) {
-		return trim(htmlspecialchars($str));
-	}
-
-	if (empty($p_name)) {
-		$nameError = 'Name should be filled';
-	}
-
-	if (empty($email)) {
-		$emailError = 'Please enter your email';
-	} else {
-		$email = validate($_POST['mail']);
-		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			$emailError = 'Invalid Email';
-		}
-	}
-    if (empty($phone)) {
-		$phoneError = 'Please enter your phonenumber';
-	} 	
-	if (empty($extra_details)) {
-		$messageError = 'Please enter your message';
-	} 
-	
-	if (empty($nameError) && empty($emailError) && empty($phoneError)  && empty($messageError) ) {
-		// great form filling
-		
-   include '../tms92/tms92-db-connector.php' ;
-   //include '../vr2-mailer/mailer-contact-us.php' ;
-		
-		exit(); // terminates the script
-	}
-	else{
-	    
-	   echo "Someting Went wrong";
-	}
-
-}
-
 ?>

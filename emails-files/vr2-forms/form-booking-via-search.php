@@ -1,6 +1,11 @@
 <script src="https://www.google.com/recaptcha/api.js?render=6Le70_0lAAAAAEEnPWZ5M5HQ5L7tjetfP49Y2DbW"></script>
 <form id="form-booking-via-search" 
 action="<?php echo strip_tags(htmlspecialchars("emails-files/vr3-recaptcha/captcha-booking-via-search.php?origin=$_GET[origin]&destination=$_GET[destination]&origin_city=$_GET[origin_city]&destination_city=$_GET[destination_city]&trip_type=$_GET[trip_type]&duration=$_GET[duration]&stopCount=$_GET[stopCount]&totalFare=$_GET[totalFare]&departing_date=$_GET[departing_date]&leaving_date=$_GET[leaving_date]&class_name=$_GET[class_name]&adults=$_GET[adults]&child=$_GET[child]&infants=$_GET[infants]&flexible_date=$_GET[flexible_date]&airline_name=$_GET[airline_name]")); ?>" method="post">
+<input type="hidden" name="pf_ts" value="<?php echo time(); ?>">
+<div style="display:none !important; visibility:hidden !important; position:absolute !important; left:-9999px !important;">
+    <label for="form_website_hp">Leave empty</label>
+    <input type="text" name="form_website_hp" id="form_website_hp" tabindex="-1" autocomplete="off" value="" />
+</div>
 
 
 <?php

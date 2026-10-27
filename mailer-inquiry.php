@@ -1,5 +1,13 @@
 <?php
 
+require_once __DIR__ . '/emails-files/vr2-validations/security-helper.php';
+
+// Anti-bot trap
+if (pf_is_bot_honeypot() || pf_is_bot_timing()) {
+    header("Location: success.php");
+    exit;
+}
+
 require('loading/phpmailer/class.phpmailer.php');
 require('loading/phpmailer/class.smtp.php');
 
@@ -7,27 +15,31 @@ require('loading/phpmailer/class.smtp.php');
 
 function test_input($dataValidate)
 {
-    $dataValidate = trim($dataValidate);
-    $dataValidate = stripslashes($dataValidate);
-    $dataValidate = htmlspecialchars($dataValidate);
-    $dataValidate = strip_tags($dataValidate);
-    return $dataValidate;
+    return pf_clean_input($dataValidate);
 }
 
-$name = test_input($_POST['name']);
-$cell = test_input($_POST['cell']);
-$inq_email = test_input($_POST['inq_email']);
-$inq_trip = test_input($_POST['inq_trip']);
-$flying_from = test_input($_POST['flying_from']);
-$flying_to = test_input($_POST['flying_to']);
-$dep_date = test_input($_POST['dep_date']);
-$ret_date = test_input($_POST['ret_date']);
-$inq_message = test_input($_POST['inq_message']);
-$ip_country = test_input($_POST['ip_country']);
-$ip = test_input($_POST['ip']);
-$device = test_input($_POST['device']);
-$query_form = test_input($_POST['query_form']);
-$query_date = test_input($_POST['query_date']);
+$name = test_input($_POST['name'] ?? '');
+$cell = test_input($_POST['cell'] ?? '');
+$inq_email = test_input($_POST['inq_email'] ?? '');
+$inq_trip = test_input($_POST['inq_trip'] ?? '');
+$flying_from = test_input($_POST['flying_from'] ?? '');
+$flying_to = test_input($_POST['flying_to'] ?? '');
+$dep_date = test_input($_POST['dep_date'] ?? '');
+$ret_date = test_input($_POST['ret_date'] ?? '');
+$inq_message = test_input($_POST['inq_message'] ?? '');
+$ip_country = test_input($_POST['ip_country'] ?? '');
+$ip = test_input($_POST['ip'] ?? '');
+$device = test_input($_POST['device'] ?? '');
+$query_form = test_input($_POST['query_form'] ?? '');
+$query_date = test_input($_POST['query_date'] ?? '');
+
+$nameValidationErr = pf_validate_name($name);
+$phoneValidationErr = pf_validate_phone($cell);
+$emailValidationErr = pf_validate_email($inq_email);
+if ($nameValidationErr || $phoneValidationErr || $emailValidationErr) {
+    header("location:success.php?error=" . urlencode($nameValidationErr ?? $phoneValidationErr ?? $emailValidationErr));
+    exit;
+}
 
 
 

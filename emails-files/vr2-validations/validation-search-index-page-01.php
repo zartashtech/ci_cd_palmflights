@@ -1,81 +1,42 @@
 <?php
+require_once __DIR__ . '/security-helper.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    function test_input($dataValidate)
-{
-    $dataValidate = trim($dataValidate);
-    $dataValidate = stripslashes($dataValidate);
-    $dataValidate = htmlspecialchars($dataValidate);
-    $dataValidate = strip_tags($dataValidate);
-    return $dataValidate;
+    // Anti-bot checks
+    if (pf_is_bot_honeypot() || pf_is_bot_timing()) {
+        exit('Request processed.');
+    }
+
+    $p_name           = "Call Only";
+    $email            = pf_clean_input($_POST['customeremail'] ?? '');
+    $phone            = pf_clean_input($_POST['customerphone'] ?? '');
+    $flight_type      = pf_clean_input($_POST['trip_type'] ?? 'return');
+    $departure        = pf_clean_input($_POST['origin'] ?? '');
+    $arrival          = pf_clean_input($_POST['destination'] ?? '');
+    $departure_date   = pf_clean_input($_POST['start'] ?? '');
+    $arrival_date     = pf_clean_input($_POST['end'] ?? '');
+    $number_of_adult  = pf_clean_input($_POST['adults'] ?? '1');
+    $number_of_child  = pf_clean_input($_POST['child'] ?? '0');
+    $number_of_infant = pf_clean_input($_POST['infants'] ?? '0');
+    $prefered_airline = pf_clean_input($_POST['airline_name'] ?? 'ALL');
+    $travel_class     = pf_clean_input($_POST['class_name'] ?? 'Economy');
+    $source_id        = 2;
+    $siteurl          = "Inquiry For Email & Contact No Only";
+    $form_name        = pf_clean_input($_POST['form_name'] ?? 'search-index-01');
+
+    // Strict validation
+    $emailError = pf_validate_email($email);
+    // If phone is provided, validate phone strictly as well
+    $phoneError = !empty($phone) ? pf_validate_phone($phone) : null;
+    $originError = empty($departure) ? 'Please enter departure.' : null;
+    $destinationError = empty($arrival) ? 'Please enter destination.' : null;
+
+    if (empty($emailError) && empty($phoneError) && empty($originError) && empty($destinationError)) {
+        include __DIR__ . '/../tms92/tms92-db-connector.php';
+    } else {
+        $firstErr = $emailError ?? $phoneError ?? $originError ?? $destinationError ?? 'Please verify your search details.';
+        error_log("Search validation failed: " . $firstErr);
+    }
 }
-
-
-$p_name ="Call Only";
-$email =test_input($_POST['customeremail']);
-$phone =test_input($_POST['customerphone']);
-$flight_type =test_input($_POST['trip_type']);
-$departure =test_input($_POST['origin']);
-$arrival =test_input($_POST['destination']);
-$departure_date =test_input($_POST['start']);
-$arrival_date =test_input($_POST['end']);
-$number_of_adult =test_input($_POST['adults']);
-$number_of_child =test_input($_POST['child']);
-$number_of_infant =test_input($_POST['infants']);
-$prefered_airline=test_input($_POST['airline_name']);
-$travel_class=test_input($_POST['class_name']);
-$source_id =2;
-$siteurl ="Inquiry For Email & Contact No Only";
-
-
-
-	// primary validate function
-	function validate($str) {
-		return trim(htmlspecialchars($str));
-	}
-
-	if (empty($email)) {
-		$emailError = 'Please enter your email';
-	} else {
-		$email = validate($_POST['customeremail']);
-		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			$emailError = 'Invalid Email';
-		}
-	}
-    if (empty($phone)) {
-		$phoneError = 'Please enter your phonenumber';
-	} 	
-	if (empty($departure)) {
-		$originError = 'Please enter your origin';
-	} 
-	
-	if (empty($arrival)) {
-		$destinationError = 'Please enter your destination';
-	} 
-	if (empty($departure_date)) {
-		$departuredateError = 'Please provide departure date';
-	} 
-	if (empty($arrival_date)) {
-		$leavingDateError = 'Please enter your return';
-	} 
-	
-
-	if (empty($emailError)) {
-		// great form filling
-		
-   include 'emails-files/tms92/tms92-db-connector.php' ;
-   
-   
-   //include 'emails-files/vr2-mailer/mailer-search-index-page-01.php' ;
-   
-   
-		
-	}
-	else{
-	    
-	   echo "Someting Went wrong";
-	}
-
-}
-
 ?>
