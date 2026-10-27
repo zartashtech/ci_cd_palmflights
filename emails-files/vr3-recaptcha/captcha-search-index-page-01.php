@@ -33,9 +33,21 @@ $isHostnameMismatch = in_array('hostname-mismatch', $errorCodes, true);
 $host = $_SERVER['HTTP_HOST'] ?? '';
 $isBeta = (strpos($host, 'beta.') !== false || strpos($host, 'localhost') !== false);
 
-if (($isSuccess && ($arrResponse["score"] ?? 0) >= 0.5) || ($isBeta && ($isHostnameMismatch || $isSuccess))) {
+$allowSubmission = false;
+if ($isSuccess && ($arrResponse["score"] ?? 0) >= 0.3) {
+    $allowSubmission = true;
+} elseif ($isHostnameMismatch) {
+    $allowSubmission = true;
+} elseif (!empty($token) && empty($arrResponse)) {
+    $allowSubmission = true;
+} elseif ($isBeta && $isSuccess) {
+    $allowSubmission = true;
+}
+
+if ($allowSubmission) {
     include __DIR__ . '/../vr2-validations/validation-search-index-page-01.php';
 } else {
     error_log("reCAPTCHA failed on search-index: " . json_encode($arrResponse) . " Host: $host");
+    echo "<script>alert('Security verification failed. Please refresh the page and try again.'); window.history.back();</script>";
 }
 ?>

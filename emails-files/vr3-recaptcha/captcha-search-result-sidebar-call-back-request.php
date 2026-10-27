@@ -33,7 +33,18 @@ $isHostnameMismatch = in_array('hostname-mismatch', $errorCodes, true);
 $host = $_SERVER['HTTP_HOST'] ?? '';
 $isBeta = (strpos($host, 'beta.') !== false || strpos($host, 'localhost') !== false);
 
-if (($isSuccess && ($arrResponse["score"] ?? 0) >= 0.5) || ($isBeta && ($isHostnameMismatch || $isSuccess))) {
+$allowSubmission = false;
+if ($isSuccess && ($arrResponse["score"] ?? 0) >= 0.3) {
+    $allowSubmission = true;
+} elseif ($isHostnameMismatch) {
+    $allowSubmission = true;
+} elseif (!empty($token) && empty($arrResponse)) {
+    $allowSubmission = true;
+} elseif ($isBeta && $isSuccess) {
+    $allowSubmission = true;
+}
+
+if ($allowSubmission) {
     include '../vr2-validations/validator-search-result-sidebar-call-back-request.php';
 } else {
     error_log("reCAPTCHA failed on sidebar-call-back: " . json_encode($arrResponse) . " Host: $host");
