@@ -45,6 +45,21 @@
 
 <script>
     var isSubmittingDirect = false;
+    function resetDirectSubmitBtn() {
+        isSubmittingDirect = false;
+        var $btn = $('#form-booking-via-direct-landing-page').find('input[type="submit"], button[type="submit"]');
+        $btn.prop('disabled', false).css('opacity', '1');
+        if ($btn.is('input')) {
+            $btn.val('Complete Booking');
+        } else {
+            $btn.html('Complete Booking');
+        }
+    }
+
+    window.addEventListener('pageshow', function() {
+        resetDirectSubmitBtn();
+    });
+
     $('#form-booking-via-direct-landing-page').submit(function(event) {
         if (isSubmittingDirect) {
             event.preventDefault();
@@ -54,22 +69,27 @@
         event.preventDefault();
         
         var $btn = $(this).find('input[type="submit"], button[type="submit"]');
-        var origText = $btn.is('input') ? $btn.val() : $btn.html();
         if ($btn.is('input')) {
             $btn.val('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
         } else {
             $btn.html('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
         }
+
+        setTimeout(function() {
+            if (isSubmittingDirect) {
+                resetDirectSubmitBtn();
+            }
+        }, 8000);
  
         grecaptcha.ready(function() {
             grecaptcha.execute('6Le70_0lAAAAAEEnPWZ5M5HQ5L7tjetfP49Y2DbW', {action: 'subscribe_newsletter'}).then(function(token) {
+                $('#form-booking-via-direct-landing-page').find('input[name="token"]').remove();
+                $('#form-booking-via-direct-landing-page').find('input[name="action"]').remove();
                 $('#form-booking-via-direct-landing-page').prepend('<input type="hidden" name="token" value="' + token + '">');
                 $('#form-booking-via-direct-landing-page').prepend('<input type="hidden" name="action" value="subscribe_newsletter">');
                 $('#form-booking-via-direct-landing-page').unbind('submit').submit();
             }).catch(function(err) {
-                isSubmittingDirect = false;
-                $btn.prop('disabled', false).css('opacity', '1');
-                if ($btn.is('input')) { $btn.val(origText); } else { $btn.html(origText); }
+                resetDirectSubmitBtn();
             });
         });
     });

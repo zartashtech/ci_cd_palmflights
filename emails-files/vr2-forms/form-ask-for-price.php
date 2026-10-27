@@ -236,6 +236,21 @@ action="emails-files/vr3-recaptcha/captcha-ask-for-price.php">
                             
 <script>
     var isSubmittingQuote = false;
+    function resetQuoteSubmitBtn() {
+        isSubmittingQuote = false;
+        var $btn = $('#newsletterForm').find('input[type="submit"], button[type="submit"]');
+        $btn.prop('disabled', false).css('opacity', '1');
+        if ($btn.is('input')) {
+            $btn.val('Ask for price');
+        } else {
+            $btn.html('Ask for price');
+        }
+    }
+
+    window.addEventListener('pageshow', function() {
+        resetQuoteSubmitBtn();
+    });
+
     $('#newsletterForm').submit(function(event) {
         if (isSubmittingQuote) {
             event.preventDefault();
@@ -245,22 +260,27 @@ action="emails-files/vr3-recaptcha/captcha-ask-for-price.php">
         event.preventDefault();
         
         var $btn = $(this).find('input[type="submit"], button[type="submit"]');
-        var origText = $btn.is('input') ? $btn.val() : $btn.html();
         if ($btn.is('input')) {
             $btn.val('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
         } else {
             $btn.html('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
         }
+
+        setTimeout(function() {
+            if (isSubmittingQuote) {
+                resetQuoteSubmitBtn();
+            }
+        }, 8000);
  
         grecaptcha.ready(function() {
             grecaptcha.execute('6Le70_0lAAAAAEEnPWZ5M5HQ5L7tjetfP49Y2DbW', {action: 'subscribe_newsletter'}).then(function(token) {
+                $('#newsletterForm').find('input[name="token"]').remove();
+                $('#newsletterForm').find('input[name="action"]').remove();
                 $('#newsletterForm').prepend('<input type="hidden" name="token" value="' + token + '">');
                 $('#newsletterForm').prepend('<input type="hidden" name="action" value="subscribe_newsletter">');
                 $('#newsletterForm').unbind('submit').submit();
             }).catch(function(err) {
-                isSubmittingQuote = false;
-                $btn.prop('disabled', false).css('opacity', '1');
-                if ($btn.is('input')) { $btn.val(origText); } else { $btn.html(origText); }
+                resetQuoteSubmitBtn();
             });
         });
     });

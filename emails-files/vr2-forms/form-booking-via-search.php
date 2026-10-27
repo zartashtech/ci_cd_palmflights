@@ -56,6 +56,22 @@ if ($trip_type === "oneway") {
 </form>
 <script>
     var isSubmittingSearch = false;
+    function resetSearchSubmitBtn() {
+        isSubmittingSearch = false;
+        var $btn = $('#form-booking-via-search').find('input[type="submit"], button[type="submit"]');
+        $btn.prop('disabled', false).css('opacity', '1');
+        if ($btn.is('input')) {
+            $btn.val('Complete Booking');
+        } else {
+            $btn.html('Complete Booking');
+        }
+    }
+
+    // Reset button whenever page is shown (handles browser back button / bfcache)
+    window.addEventListener('pageshow', function() {
+        resetSearchSubmitBtn();
+    });
+
     $('#form-booking-via-search').submit(function(event) {
         if (isSubmittingSearch) {
             event.preventDefault();
@@ -65,22 +81,28 @@ if ($trip_type === "oneway") {
         event.preventDefault();
         
         var $btn = $(this).find('input[type="submit"], button[type="submit"]');
-        var origText = $btn.is('input') ? $btn.val() : $btn.html();
         if ($btn.is('input')) {
             $btn.val('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
         } else {
             $btn.html('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
         }
+
+        // Safety fallback: re-enable after 8 seconds if submission doesn't leave the page
+        setTimeout(function() {
+            if (isSubmittingSearch) {
+                resetSearchSubmitBtn();
+            }
+        }, 8000);
  
         grecaptcha.ready(function() {
             grecaptcha.execute('6Le70_0lAAAAAEEnPWZ5M5HQ5L7tjetfP49Y2DbW', {action: 'subscribe_newsletter'}).then(function(token) {
+                $('#form-booking-via-search').find('input[name="token"]').remove();
+                $('#form-booking-via-search').find('input[name="action"]').remove();
                 $('#form-booking-via-search').prepend('<input type="hidden" name="token" value="' + token + '">');
                 $('#form-booking-via-search').prepend('<input type="hidden" name="action" value="subscribe_newsletter">');
                 $('#form-booking-via-search').unbind('submit').submit();
             }).catch(function(err) {
-                isSubmittingSearch = false;
-                $btn.prop('disabled', false).css('opacity', '1');
-                if ($btn.is('input')) { $btn.val(origText); } else { $btn.html(origText); }
+                resetSearchSubmitBtn();
             });
         });
     });

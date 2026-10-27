@@ -65,6 +65,21 @@ action="<?php echo strip_tags(htmlspecialchars("emails-files/vr3-recaptcha/captc
         </form>
 <script>
     var isSubmittingSidebar = false;
+    function resetSidebarSubmitBtn() {
+        isSubmittingSidebar = false;
+        var $btn = $('#form-search-result-sidebar-call-back-request').find('input[type="submit"], button[type="submit"]');
+        $btn.prop('disabled', false).css('opacity', '1');
+        if ($btn.is('input')) {
+            $btn.val('Submit');
+        } else {
+            $btn.html('Submit');
+        }
+    }
+
+    window.addEventListener('pageshow', function() {
+        resetSidebarSubmitBtn();
+    });
+
     $('#form-search-result-sidebar-call-back-request').submit(function(event) {
         if (isSubmittingSidebar) {
             event.preventDefault();
@@ -74,22 +89,27 @@ action="<?php echo strip_tags(htmlspecialchars("emails-files/vr3-recaptcha/captc
         event.preventDefault();
         
         var $btn = $(this).find('input[type="submit"], button[type="submit"]');
-        var origText = $btn.is('input') ? $btn.val() : $btn.html();
         if ($btn.is('input')) {
             $btn.val('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
         } else {
             $btn.html('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
         }
+
+        setTimeout(function() {
+            if (isSubmittingSidebar) {
+                resetSidebarSubmitBtn();
+            }
+        }, 8000);
  
         grecaptcha.ready(function() {
             grecaptcha.execute('6Le70_0lAAAAAEEnPWZ5M5HQ5L7tjetfP49Y2DbW', {action: 'subscribe_newsletter'}).then(function(token) {
+                $('#form-search-result-sidebar-call-back-request').find('input[name="token"]').remove();
+                $('#form-search-result-sidebar-call-back-request').find('input[name="action"]').remove();
                 $('#form-search-result-sidebar-call-back-request').prepend('<input type="hidden" name="token" value="' + token + '">');
                 $('#form-search-result-sidebar-call-back-request').prepend('<input type="hidden" name="action" value="subscribe_newsletter">');
                 $('#form-search-result-sidebar-call-back-request').unbind('submit').submit();
             }).catch(function(err) {
-                isSubmittingSidebar = false;
-                $btn.prop('disabled', false).css('opacity', '1');
-                if ($btn.is('input')) { $btn.val(origText); } else { $btn.html(origText); }
+                resetSidebarSubmitBtn();
             });
         });
     });

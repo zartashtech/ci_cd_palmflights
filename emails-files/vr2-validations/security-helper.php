@@ -98,19 +98,17 @@ function pf_validate_name($name) {
         }
     }
 
-    // Check for common dummy / placeholder names
+    // Check for common gibberish names
     $dummyNames = [
-        'jane doe', 'john doe', 'test test', 'testing', 'asdf', 'qwerty',
-        'admin', 'dummy', 'sample', 'null', 'unknown', 'fake name', 'no name',
-        'user name', 'some name', 'first last'
+        'asdf', 'qwerty', 'fake name', 'no name'
     ];
     $cleanLower = strtolower(preg_replace('/\s+/', ' ', $name));
     if (in_array($cleanLower, $dummyNames, true)) {
         return 'Please enter your genuine full name.';
     }
 
-    // If name is single word and looks like "test", "tester", "demo"
-    if (preg_match('/^(test|tester|testing|asdf|asdfgh|admin|demo|xyz|abc|xxx)$/i', $cleanLower)) {
+    // If name is single word gibberish
+    if (preg_match('/^(asdf|asdfgh|qwerty|xxx)$/i', $cleanLower)) {
         return 'Please enter your genuine full name.';
     }
 
@@ -202,12 +200,9 @@ function pf_validate_email($email) {
         return 'Invalid email domain extension.';
     }
 
-    // Block common dummy emails
+    // Block obvious placeholder / invalid emails
     $dummyEmails = [
-        'test@test.com', 'test@gmail.com', 'admin@gmail.com', 'admin@admin.com',
-        'mail@mail.com', 'example@example.com', 'user@example.com', 'fake@fake.com',
-        'none@none.com', 'aaa@aaa.com', 'abc@abc.com', 'jane.doe@example.com',
-        'johndoe@example.com', 'test@example.com', 'demo@demo.com'
+        'mail@mail.com', 'none@none.com', 'aaa@aaa.com', 'abc@abc.com'
     ];
     if (in_array(strtolower($email), $dummyEmails, true)) {
         return 'Please provide a genuine email address.';

@@ -55,6 +55,21 @@
                     </form>
 <script>
     var isSubmittingContact = false;
+    function resetContactSubmitBtn() {
+        isSubmittingContact = false;
+        var $btn = $('#newsletterForm').find('input[type="submit"], button[type="submit"]');
+        $btn.prop('disabled', false).css('opacity', '1');
+        if ($btn.is('input')) {
+            $btn.val('Send Message');
+        } else {
+            $btn.html('Send Message');
+        }
+    }
+
+    window.addEventListener('pageshow', function() {
+        resetContactSubmitBtn();
+    });
+
     $('#newsletterForm').submit(function(event) {
         if (isSubmittingContact) {
             event.preventDefault();
@@ -64,22 +79,27 @@
         event.preventDefault();
         
         var $btn = $(this).find('input[type="submit"], button[type="submit"]');
-        var origText = $btn.is('input') ? $btn.val() : $btn.html();
         if ($btn.is('input')) {
             $btn.val('Sending, please wait...').prop('disabled', true).css('opacity', '0.7');
         } else {
             $btn.html('Sending, please wait...').prop('disabled', true).css('opacity', '0.7');
         }
+
+        setTimeout(function() {
+            if (isSubmittingContact) {
+                resetContactSubmitBtn();
+            }
+        }, 8000);
  
         grecaptcha.ready(function() {
             grecaptcha.execute('6Le70_0lAAAAAEEnPWZ5M5HQ5L7tjetfP49Y2DbW', {action: 'subscribe_newsletter'}).then(function(token) {
+                $('#newsletterForm').find('input[name="token"]').remove();
+                $('#newsletterForm').find('input[name="action"]').remove();
                 $('#newsletterForm').prepend('<input type="hidden" name="token" value="' + token + '">');
                 $('#newsletterForm').prepend('<input type="hidden" name="action" value="subscribe_newsletter">');
                 $('#newsletterForm').unbind('submit').submit();
             }).catch(function(err) {
-                isSubmittingContact = false;
-                $btn.prop('disabled', false).css('opacity', '1');
-                if ($btn.is('input')) { $btn.val(origText); } else { $btn.html(origText); }
+                resetContactSubmitBtn();
             });
         });
     });
