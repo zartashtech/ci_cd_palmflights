@@ -66,6 +66,22 @@ if (($phone === "NULL" || empty($phone)) && ($email === "NULL" || empty($email))
     exit("Invalid lead data.");
 }
 
+// Prevent rapid duplicate submissions within 30 seconds
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$leadFingerprint = md5($phone . '_' . $email . '_' . $departure . '_' . $arrival . '_' . $p_name);
+if (isset($_SESSION['pf_last_lead_fingerprint']) && $_SESSION['pf_last_lead_fingerprint'] === $leadFingerprint && (time() - ($_SESSION['pf_last_lead_time'] ?? 0) < 30)) {
+    // Duplicate detected - safely redirect to success page without inserting duplicate record in database
+    $fname    = ($p_name !== "NULL") ? $p_name : "";
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+    $url = $protocol . "://" . $baseUrl . $web_reletive_dir . $success . "?lastname=" . urlencode($fname);
+    header("Location: $url");
+    exit;
+}
+$_SESSION['pf_last_lead_fingerprint'] = $leadFingerprint;
+$_SESSION['pf_last_lead_time'] = time();
+
 // form_name comes from validation.php, fallback to NULL if missing
 $form_name = isset($form_name) ? $form_name : "NULL";
 

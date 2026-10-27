@@ -43,17 +43,34 @@
     <input class="btn btn-primary" name="btnSubmit" type="submit" value="Complete Booking" />
 </form>
 
-                                        <script>
+<script>
+    var isSubmittingDirect = false;
     $('#form-booking-via-direct-landing-page').submit(function(event) {
+        if (isSubmittingDirect) {
+            event.preventDefault();
+            return false;
+        }
+        isSubmittingDirect = true;
         event.preventDefault();
-        var email = $('#email').val();
+        
+        var $btn = $(this).find('input[type="submit"], button[type="submit"]');
+        var origText = $btn.is('input') ? $btn.val() : $btn.html();
+        if ($btn.is('input')) {
+            $btn.val('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
+        } else {
+            $btn.html('Processing, please wait...').prop('disabled', true).css('opacity', '0.7');
+        }
  
         grecaptcha.ready(function() {
             grecaptcha.execute('6Le70_0lAAAAAEEnPWZ5M5HQ5L7tjetfP49Y2DbW', {action: 'subscribe_newsletter'}).then(function(token) {
                 $('#form-booking-via-direct-landing-page').prepend('<input type="hidden" name="token" value="' + token + '">');
                 $('#form-booking-via-direct-landing-page').prepend('<input type="hidden" name="action" value="subscribe_newsletter">');
                 $('#form-booking-via-direct-landing-page').unbind('submit').submit();
-            });;
+            }).catch(function(err) {
+                isSubmittingDirect = false;
+                $btn.prop('disabled', false).css('opacity', '1');
+                if ($btn.is('input')) { $btn.val(origText); } else { $btn.html(origText); }
+            });
         });
-  });
-  </script>
+    });
+</script>

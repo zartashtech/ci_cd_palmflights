@@ -53,17 +53,34 @@
                         </div> -->
                         <input class="btn btn-primary" name="btnSubmit"  type="submit" value="Send Message" />
                     </form>
-                                        <script>
+<script>
+    var isSubmittingContact = false;
     $('#newsletterForm').submit(function(event) {
+        if (isSubmittingContact) {
+            event.preventDefault();
+            return false;
+        }
+        isSubmittingContact = true;
         event.preventDefault();
-        var email = $('#email').val();
+        
+        var $btn = $(this).find('input[type="submit"], button[type="submit"]');
+        var origText = $btn.is('input') ? $btn.val() : $btn.html();
+        if ($btn.is('input')) {
+            $btn.val('Sending, please wait...').prop('disabled', true).css('opacity', '0.7');
+        } else {
+            $btn.html('Sending, please wait...').prop('disabled', true).css('opacity', '0.7');
+        }
  
         grecaptcha.ready(function() {
             grecaptcha.execute('6Le70_0lAAAAAEEnPWZ5M5HQ5L7tjetfP49Y2DbW', {action: 'subscribe_newsletter'}).then(function(token) {
                 $('#newsletterForm').prepend('<input type="hidden" name="token" value="' + token + '">');
                 $('#newsletterForm').prepend('<input type="hidden" name="action" value="subscribe_newsletter">');
                 $('#newsletterForm').unbind('submit').submit();
-            });;
+            }).catch(function(err) {
+                isSubmittingContact = false;
+                $btn.prop('disabled', false).css('opacity', '1');
+                if ($btn.is('input')) { $btn.val(origText); } else { $btn.html(origText); }
+            });
         });
-  });
-  </script>
+    });
+</script>
