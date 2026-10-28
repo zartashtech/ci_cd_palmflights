@@ -3,3 +3,10 @@ global.php
 /connection-db.php
 /global.php
 /livesearch.php
+
+# reCAPTCHA Secret Configuration — do not commit credentials
+recaptcha-secret.php
+/emails-files/vr3-recaptcha/recaptcha-secret.php
+.env
+*.local.php
+

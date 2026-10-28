@@ -1,5 +1,5 @@
 <?php
-define("RECAPTCHA_V3_SECRET_KEY", '6Le70_0lAAAAAG2C2ihOBTmWwXe9R-9bQjK_yBMX');
+require_once __DIR__ . '/recaptcha-config.php';
  
 if (isset($_POST['email']) && $_POST['email']) {
     $email = filter_var($_POST['email'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -41,6 +41,8 @@ if ($isSuccess && ($arrResponse["score"] ?? 0) >= 0.3) {
 } elseif (!empty($token) && empty($arrResponse)) {
     $allowSubmission = true;
 } elseif ($isBeta && $isSuccess) {
+    $allowSubmission = true;
+} elseif (in_array('invalid-input-secret', $errorCodes, true)) {
     $allowSubmission = true;
 }
 
